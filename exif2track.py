@@ -4,6 +4,27 @@
 # In[ ]:
 
 # exif2track - script to plot photo locations and tabulate image info
+# This is an ipython script that can be run in a Jupyter notebook
+# after loading with the magic command %load exif2track.py
+
+"""
+Unless otherwise noted, the software and content on this site is
+in the public domain because it contains materials developed by
+the United States Geological Survey, an agency of the United States
+Department of Interior. For more information, see the official USGS
+copyright policy at:
+
+http://www.usgs.gov/visual-id/credit_usgs.html#copyright
+
+This software and content is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Any
+dependent libraries included here are distributed under open source
+(or open source-like) licenses/agreements. Appropriate license agreements
+are included with each library.
+"""
+# 15-Jul-2016
+# csherwood@usgs.gov
+# Includes code from Eddie Obrupta, Raptor Maps, Inc.
 
 import __future__
 import sys
@@ -57,11 +78,11 @@ def averageRGB(fpath):
     Return the average RBG color of an image
     """
     im = Image.open(fpath)
-    h=np.array( im.histogram() )
+    h=np.array( im.histogram(), dtype='float64')
     h=np.reshape(h,(3,256))
 
-    rgb = np.zeros((1,3))
-    wts = np.arange(0,254)
+    rgb = np.zeros((1,3), dtype='float64')
+    wts = np.arange(0,254, dtype='float64')
     for i in range(0,3):
         rgb[0,i] = sum(h[i,0:254]*wts)/sum(h[i,0:254])
 
@@ -71,6 +92,8 @@ def averageRGB(fpath):
 def getGPSFiles(filepath):
     """
     Return a list of files with GPS data
+    
+    Includes code from Eddie Obrupta, Raptor Maps, Inc.
     """
     files_gps = []
     files = sorted(glob.glob(filepath))
@@ -139,7 +162,7 @@ def transformCoordinateSystem(files):
     Read EXIF and GPS information from a list of pathnames
     and return an np.array with UTM Zone 19 North coordinates.
     
-    Includes code from Eddie Obrupta, (c) Raptor Maps, Inc.
+    Includes code from Eddie Obrupta, Raptor Maps, Inc.
     csherwood@usgs.gov
     """
     nfiles = len(files)
@@ -164,7 +187,7 @@ def transformCoordinateSystem(files):
             alt_num = eval(compile(str(alt),'<string>','eval', __future__.division.compiler_flag))
             # print alt, alt_num
         except:
-            alt_num = -999.9
+            alt_num = -99.9
 
         try:
             time = tags['GPS GPSTimeStamp']
@@ -260,10 +283,10 @@ def transformCoordinateSystem(files):
 # input arguments
 # image folder
 
-imdir='flight_1_rgb_1'
+#imdir='flight_1_rgb_1'
 #imdir='flight_1_rgb_2'
 #imdir='flight_2_rgb_1'
-#imdir='flight_2_nir_1'
+imdir='flight_2_nir_1'
 #imdir='testdir'
 
 # path to image folder
@@ -283,7 +306,7 @@ fpnames,fp = transformCoordinateSystem(files)
 csvpath = tdir+imdir+'.csv'
 fid = open(csvpath,'w')
 for i in np.arange(fp.shape[1]):
-    fid.write("{0:s},{1:4.0f},{2:02.0f},{3:02.0f},{4:02.0f},{5:02.0f},{6:06.3f},{7:11.6f},{8:10.6f},{9: 11.3f},{10: 11.3f},{11:6.1f}\n"       .format(fpnames[i],fp[0,i],fp[1,i],fp[2,i],fp[3,i],fp[4,i],fp[5,i],fp[6,i],fp[7,i],fp[8,i],fp[9,i],fp[10,i]))
+    fid.write("{0:s},{1:4.0f},{2:02.0f},{3:02.0f},{4:02.0f},{5:02.0f},{6:06.3f},{7:11.6f},{8:10.6f},{9: 11.3f},{10: 11.3f},{11:6.1f}\n"              .format(fpnames[i],fp[0,i],fp[1,i],fp[2,i],fp[3,i],fp[4,i],fp[5,i],fp[6,i],fp[7,i],fp[8,i],fp[9,i],fp[10,i]))
 fid.close()
 
 # calculate ground speed
@@ -297,9 +320,6 @@ print 'Mean delta t (s):',np.mean(dt)
 speed = dist/(dt+eps)
 print('Ground speed: Mean {0}, Max: {1}, Min: {2} m/s\n'.format(np.mean(speed), np.max(speed), np.min(speed)))
 
-
-# In[16]:
-
 # plot UTM x,y with average image color
 rgb = fp[12:15,:]
 ss = np.ones_like(fp[1,:])*20.
@@ -307,7 +327,6 @@ ss = np.ones_like(fp[1,:])*20.
 fig,ax = plt.subplots(figsize=(8,20))
 for i in range(len(fp[0,:])):
     col = rgb[:,i]
-    print(np.shape(col))
     try:
         ax.scatter(fp[8,i],fp[9,i],s=60,c=rgb[:,i],edgecolors='none')
     except:
@@ -321,29 +340,4 @@ plt.ylim(4630000,4634000)
 plt.gca().set_aspect('equal', adjustable='box')
 plt.draw()
 plt.savefig(tdir+imdir+'track.png')
-
-
-# In[17]:
-
-print rgb[:,0:30]
-
-
-# In[10]:
-
-len(fp[0,:])
-
-
-# In[14]:
-
-print(rgb[:,1])
-
-
-# In[15]:
-
-print i
-
-
-# In[ ]:
-
-
 
