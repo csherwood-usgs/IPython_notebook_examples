@@ -24,7 +24,7 @@ are included with each library.
 """
 # 15-Jul-2016
 # csherwood@usgs.gov
-# Includes code from Eddie Obrupta, Raptor Maps, Inc.
+# Includes code from Eddie Obropta, Raptor Maps, Inc.
 
 import __future__
 import sys
@@ -93,7 +93,7 @@ def getGPSFiles(filepath):
     """
     Return a list of files with GPS data
     
-    Includes code from Eddie Obrupta, Raptor Maps, Inc.
+    Includes code from Eddie Obropta, Raptor Maps, Inc.
     """
     files_gps = []
     files = sorted(glob.glob(filepath))
@@ -162,7 +162,7 @@ def transformCoordinateSystem(files):
     Read EXIF and GPS information from a list of pathnames
     and return an np.array with UTM Zone 19 North coordinates.
     
-    Includes code from Eddie Obrupta, Raptor Maps, Inc.
+    Includes code from Eddie Obropta, Raptor Maps, Inc.
     csherwood@usgs.gov
     """
     nfiles = len(files)
